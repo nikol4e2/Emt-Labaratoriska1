@@ -2,7 +2,9 @@ package com.example.labaratoriska1.service.impl;
 
 import com.example.labaratoriska1.model.Author;
 import com.example.labaratoriska1.model.Book;
+import com.example.labaratoriska1.model.dto.BookDto;
 import com.example.labaratoriska1.model.enumerations.BookCategory;
+import com.example.labaratoriska1.model.exceptions.AuthorNotFound;
 import com.example.labaratoriska1.model.exceptions.BookNotFoundException;
 import com.example.labaratoriska1.model.exceptions.BookWithIdNotFoundException;
 import com.example.labaratoriska1.repository.AuthorRepository;
@@ -76,5 +78,33 @@ public class BookServiceImpl implements BookService {
                 .orElseThrow(()-> new BookWithIdNotFoundException(id));
         book.setAvailableCopies(book.getAvailableCopies()-1);
         this.bookRepository.save(book);
+    }
+
+
+
+    @Override
+    public Optional<Book> save(BookDto bookDto) {
+        Author author=this.authorRepository.findById(bookDto.getAuthor().getId())
+                .orElseThrow(()->new AuthorNotFound(bookDto.getAuthor().getId()));
+
+        this.bookRepository.deleteByName(bookDto.getName());
+        Book book=new Book(bookDto.getName(), bookDto.getBookCategory(), author, bookDto.getAvailableCopies());
+        return  Optional.of(book);
+    }
+
+    @Override
+    public Optional<Book> edit(Long id, BookDto bookDto) {
+        Book book=this.bookRepository.findById(id)
+                .orElseThrow(()->new BookWithIdNotFoundException(id));
+
+        book.setName(bookDto.getName());
+        book.setBookCategory(bookDto.getBookCategory());
+        book.setAvailableCopies(bookDto.getAvailableCopies());
+
+        Author author=this.authorRepository.findById(bookDto.getAuthor().getId())
+                .orElseThrow(()->new AuthorNotFound(bookDto.getAuthor().getId()));
+
+        book.setAuthor(author);
+        return Optional.of(this.bookRepository.save(book));
     }
 }

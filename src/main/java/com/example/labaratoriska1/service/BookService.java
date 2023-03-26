@@ -2,6 +2,7 @@ package com.example.labaratoriska1.service;
 
 import com.example.labaratoriska1.model.Author;
 import com.example.labaratoriska1.model.Book;
+import com.example.labaratoriska1.model.dto.BookDto;
 import com.example.labaratoriska1.model.enumerations.BookCategory;
 import jdk.jfr.Category;
 
@@ -17,6 +18,11 @@ public interface BookService {
     Optional<Book> findByName(String name);
 
     Optional<Book> edit(String name, BookCategory category, Author author, int availableCopies);
+    Optional<Book> edit(Long id,BookDto bookDto);
+
+    Optional<Book> save(BookDto bookDto);
+
+
 
     Book create(String name, BookCategory category, Author author, int availableCopies);
 
@@ -27,6 +33,8 @@ public interface BookService {
     void deleteById(Long id);
 
     void markAsTaken(Long id);
+
+
 
 
 }
