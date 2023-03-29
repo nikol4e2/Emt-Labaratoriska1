@@ -12,4 +12,5 @@ public class Labaratoriska1Application {
         SpringApplication.run(Labaratoriska1Application.class, args);
     }
 
+
 }
