@@ -5,7 +5,9 @@ import com.example.labaratoriska1.model.Book;
 import com.example.labaratoriska1.model.dto.BookDto;
 import com.example.labaratoriska1.model.enumerations.BookCategory;
 import jdk.jfr.Category;
+import org.springframework.data.domain.Page;
 
+import org.springframework.data.domain.Pageable;
 import java.util.List;
 import java.util.Optional;
 
@@ -35,6 +37,5 @@ public interface BookService {
     void markAsTaken(Long id);
 
 
-
-
+    Page<Book> findAllWithPagination(Pageable pageable);
 }

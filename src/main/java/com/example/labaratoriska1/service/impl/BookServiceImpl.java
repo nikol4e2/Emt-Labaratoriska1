@@ -11,8 +11,10 @@ import com.example.labaratoriska1.repository.AuthorRepository;
 import com.example.labaratoriska1.repository.BookRepository;
 import com.example.labaratoriska1.service.BookService;
 import jdk.jfr.Category;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
+import org.springframework.data.domain.Pageable;
 import java.util.List;
 import java.util.Optional;
 
@@ -25,6 +27,11 @@ public class BookServiceImpl implements BookService {
     public BookServiceImpl(BookRepository bookRepository, AuthorRepository authorRepository) {
         this.bookRepository = bookRepository;
         this.authorRepository = authorRepository;
+    }
+
+    @Override
+    public Page<Book> findAllWithPagination(Pageable pageable) {
+        return this.bookRepository.findAll(pageable);
     }
 
     @Override
@@ -76,7 +83,9 @@ public class BookServiceImpl implements BookService {
     public void markAsTaken(Long id) {
         Book book=this.bookRepository.findById(id)
                 .orElseThrow(()-> new BookWithIdNotFoundException(id));
-        book.setAvailableCopies(book.getAvailableCopies()-1);
+        if(book.getAvailableCopies()>0) {
+            book.setAvailableCopies(book.getAvailableCopies() - 1);
+        }
         this.bookRepository.save(book);
     }
 
@@ -84,11 +93,12 @@ public class BookServiceImpl implements BookService {
 
     @Override
     public Optional<Book> save(BookDto bookDto) {
-        Author author=this.authorRepository.findById(bookDto.getAuthor().getId())
-                .orElseThrow(()->new AuthorNotFound(bookDto.getAuthor().getId()));
+        Author author=this.authorRepository.findById(bookDto.getAuthor())
+                .orElseThrow(()->new AuthorNotFound(bookDto.getAuthor()));
 
-        this.bookRepository.deleteByName(bookDto.getName());
+//        this.bookRepository.deleteByName(bookDto.getName());
         Book book=new Book(bookDto.getName(), bookDto.getBookCategory(), author, bookDto.getAvailableCopies());
+        this.bookRepository.save(book);
         return  Optional.of(book);
     }
 
@@ -101,8 +111,8 @@ public class BookServiceImpl implements BookService {
         book.setBookCategory(bookDto.getBookCategory());
         book.setAvailableCopies(bookDto.getAvailableCopies());
 
-        Author author=this.authorRepository.findById(bookDto.getAuthor().getId())
-                .orElseThrow(()->new AuthorNotFound(bookDto.getAuthor().getId()));
+        Author author=this.authorRepository.findById(bookDto.getAuthor())
+                .orElseThrow(()->new AuthorNotFound(bookDto.getAuthor()));
 
         book.setAuthor(author);
         return Optional.of(this.bookRepository.save(book));

@@ -14,11 +14,11 @@ public class BookDto {
     private BookCategory bookCategory;
 
 
-    private Author author;
+    private Long author;
 
     private int availableCopies;
 
-    public BookDto(String name, BookCategory bookCategory, Author author, int availableCopies) {
+    public BookDto(String name, BookCategory bookCategory, Long  author, int availableCopies) {
         this.name = name;
         this.bookCategory = bookCategory;
         this.author = author;
